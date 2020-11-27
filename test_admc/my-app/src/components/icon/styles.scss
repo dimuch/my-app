@@ -1,0 +1,73 @@
+svg {
+  path{
+    fill: $white;
+  }
+  &.admc-arrow-right{
+    path{
+      fill: $white;
+    }
+  }
+  &.admc-succeeded{
+    path{
+      fill: $positive-500;
+    }
+  }
+  &.admc-is-logo-collapsed{
+    path{
+      fill: $white;
+    }
+  }
+  &.admc-is-logo{
+    path{
+      &:nth-child(0){
+        fill: $white;
+      }
+      &:nth-child(1){
+        fill: #B2D7FF;
+      }
+      &:nth-child(2){
+        fill: $white;
+      }
+    }
+  }
+  &.admc-no-data{
+    path{
+      &:nth-child(1){
+        fill: #F3F5F8;
+      }
+      &:nth-child(2){
+        fill: #C6CDD7;
+      }
+      &:nth-child(3){
+        fill: #EDF0F4;
+      }
+    }
+  }
+  &.admc-reports{
+    path{
+      &:nth-child(1){
+        fill: $white;
+      }
+      &:nth-child(2){
+        fill: none;
+      }
+    }
+  }
+  &.admc-warning{
+    path{
+      &:nth-child(1){
+        fill: $negative-500;
+      }
+      &:nth-child(2){
+        fill: $white;
+      }
+    }
+  }
+  &.admc-error-warning{
+    path{
+        fill: $neutral-700;
+      }
+  }
+
+}
+

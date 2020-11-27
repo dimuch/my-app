@@ -1,0 +1,13 @@
+//reset
+@import "./reset";
+
+//base styles
+@import "./variables";
+@import "./colors";
+@import "./fonts";
+@import "./typography";
+
+//components
+@import "../components/icon/styles";
+
+@import "../components/empty-data-placeholder/styles";

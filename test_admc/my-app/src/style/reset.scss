@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+a, button, input{
+  text-decoration: none;
+  color: #172d4c;
+  &:active,
+  &:focus,
+  &:hover {
+    outline: none;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
