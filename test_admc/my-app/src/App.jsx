@@ -14,14 +14,11 @@ function App() {
     setBlockHeight(initHeight);
   }, [])
 
-
-  console.log(11, isSplitterSelected, blockHeight);
-
   return (
-    <div className="App">
+    <div className="App" >
       <div className={"admc-detailed-data-block-content-wrapper"}
-           style={{'height': blockHeight}}
            onMouseUp={endResize}
+           style={{'height': blockHeight}}
       >
         <div className="admc-detailed-block-switcher"
              onMouseDown={startResize}

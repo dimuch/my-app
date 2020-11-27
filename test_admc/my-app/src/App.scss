@@ -1,1 +1,48 @@
 @import "./style/_main";
+.admc-detailed-data-block-content-wrapper{
+  position: relative;
+}
+
+.admc-detailed-block-switcher{
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  height: 25px;
+  background-color: $light-200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+}
+
+.admc-dividers-wrapper{
+  width: 20px;
+  height: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: space-around;
+  flex-direction: row;
+  flex-wrap: wrap;
+  .divider{
+    height: 2px;
+    width: 100%;
+    background-color: $light-600;
+  }
+}
+
+.admc-detailed-data-block-content{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25px;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+}
+.App{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+}
