@@ -1,36 +1,68 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 
 import EmptyDataPlaceholder from './components/empty-data-placeholder/EmptyDataPlaceholder';
 import './App.scss';
 
-let yStart = 0, yEnd = 0, resizerEl;
+let yStart = 0, yEnd = 0, diff = 0, isSplitterSelected, h;
+
+// const useAnimationFrame = callback => {
+//   // Use useRef for mutable variables that we want to persist
+//   // without triggering a re-render on their change
+//   const requestRef = useRef(getContentHeight());
+//   const previousTimeRef = useRef(getContentHeight());
+//
+//   const animate = time => {
+//     if (previousTimeRef.current !== undefined) {
+//       const deltaTime = time - previousTimeRef.current;
+//       callback(deltaTime)
+//     }
+//     previousTimeRef.current = time;
+//     requestRef.current = requestAnimationFrame(animate);
+//   }
+//
+//   useEffect(() => {
+//     requestRef.current = requestAnimationFrame(animate);
+//     return () => cancelAnimationFrame(requestRef.current);
+//   }, []); // Make sure the effect runs only once
+// }
+
+function getContentHeight() {
+  const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  return height / 2
+}
 
 function App() {
-  const [blockHeight, setBlockHeight] = useState(0);
-  const [isSplitterSelected, setIsSplitterSelected] = useState(false);
+  const initHeight = getContentHeight();
+  const [blockHeight, setBlockHeight] = useState(initHeight);
 
-  useLayoutEffect (() =>{
-    const initHeight = getContentHeight();
-    setBlockHeight(initHeight);
-  }, [])
+  isSplitterSelected = useRef(false);
+  diff = useRef(0);
+  h = useRef(initHeight)
+
+  console.log(blockHeight, '\n', 'requestRef', isSplitterSelected, '\n', 'h ===>', h);
+
 
   return (
-    <div className="App" >
-      <div className={"admc-detailed-data-block-content-wrapper"}
-           onMouseUp={endResize}
-           style={{'height': blockHeight}}
+    <div className='top-wrap' style={{position: 'relative', height: '100vh'}}
+         onMouseMove={handleResize}
+    >
+      <div style={{height: '200px', border: '1px solid red'}}></div>
+      <div className="App"
       >
-        <div className="admc-detailed-block-switcher"
+        <div className={"admc-detailed-data-block-content-wrapper"}
+             onMouseUp={endResize}
              onMouseDown={startResize}
-             onMouseMove={handleResize}
+             style={{'height': blockHeight}}
         >
-          <div className="admc-dividers-wrapper">
-            <div className="divider"></div>
-            <div className="divider"></div>
+          <div className="admc-detailed-block-switcher">
+            <button className="admc-dividers-wrapper">
+              <div className="divider"></div>
+              <div className="divider"></div>
+            </button>
           </div>
-        </div>
-        <div className="admc-detailed-data-block-content">
-          <EmptyDataPlaceholder/>
+          <div className="admc-detailed-data-block-content">
+            <EmptyDataPlaceholder/>
+          </div>
         </div>
       </div>
     </div>
@@ -39,32 +71,29 @@ function App() {
   function startResize(event) {
     console.log('startResize ====>');
     yStart = event.clientY;
-    setIsSplitterSelected(true)
+    isSplitterSelected.current = true
   }
 
 
   function endResize(event) {
     console.log('endResize ------->');
-    if(isSplitterSelected){
-      setIsSplitterSelected(false)
+    if (isSplitterSelected) {
+      isSplitterSelected.current = false
     }
   }
 
   function handleResize(event) {
-    if (isSplitterSelected) {
-      yEnd = event.clientY;
+    yEnd = event.clientY;
+    diff.current = yStart - yEnd;
+    yStart = yEnd;
 
-      console.log('blockHeight + yStart - yEnd', blockHeight, yStart - yEnd);
-
+    if (isSplitterSelected.current && diff.current !== 0) {
+      console.log('diff=====>', diff);
+      h.current = h.current + diff.current;
       requestAnimationFrame(() => {
-        setBlockHeight(blockHeight + yStart - yEnd)
-      });
+        setBlockHeight(h.current)
+      })
     }
-  }
-
-  function getContentHeight(){
-    const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    return height/2
   }
 }
 
