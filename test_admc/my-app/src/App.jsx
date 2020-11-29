@@ -1,70 +1,77 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, { useLayoutEffect, useEffect, useState, useRef } from "react";
 
-import EmptyDataPlaceholder from './components/empty-data-placeholder/EmptyDataPlaceholder';
-import './App.scss';
-
-let yStart = 0, yEnd = 0, resizerEl;
+import EmptyDataPlaceholder from "./components/empty-data-placeholder/EmptyDataPlaceholder";
+import "./App.scss";
 
 function App() {
+  const wrapper = useRef();
+  const currentToggleLine = useRef();
+  const [isDragged, setIsDragged] = useState(false);
   const [blockHeight, setBlockHeight] = useState(0);
-  const [isSplitterSelected, setIsSplitterSelected] = useState(false);
+  const [heightStates, setHeightStates] = useState([0, 0]);
 
-  useLayoutEffect (() =>{
-    const initHeight = getContentHeight();
-    setBlockHeight(initHeight);
-  }, [])
+  useLayoutEffect(() => {
+    const { height } = wrapper.current.getBoundingClientRect();
+    setBlockHeight(height);
+    const elementHeight =
+      (height - (25 * heightStates.length - 1)) / heightStates.length;
+    setHeightStates((prev) => prev.map(() => elementHeight));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="App" >
-      <div className={"admc-detailed-data-block-content-wrapper"}
-           onMouseUp={endResize}
-           style={{'height': blockHeight}}
+    <div className="App container for dynamic block" ref={wrapper}>
+      <div
+        onMouseUp={endResize}
+        onMouseMove={handleResize}
+        className={"admc-detailed-data-block-content-wrapper"}
+        style={{ height: blockHeight }}
       >
-        <div className="admc-detailed-block-switcher"
-             onMouseDown={startResize}
-             onMouseMove={handleResize}
-        >
+        <div style={{ height: heightStates[0] }}>
+          <EmptyDataPlaceholder />
+        </div>
+        <div className="admc-detailed-block-switcher" onMouseDown={startResize}>
           <div className="admc-dividers-wrapper">
             <div className="divider"></div>
             <div className="divider"></div>
           </div>
         </div>
-        <div className="admc-detailed-data-block-content">
-          <EmptyDataPlaceholder/>
+        <div style={{ height: heightStates[1] }}>
+          <EmptyDataPlaceholder />
         </div>
       </div>
     </div>
   );
 
   function startResize(event) {
-    console.log('startResize ====>');
-    yStart = event.clientY;
-    setIsSplitterSelected(true)
+    if (isDragged) {
+      return;
+    }
+
+    const { target, pageY } = event;
+    const dY = pageY - target.offsetTop;
+
+    currentToggleLine.current = { target, dY };
+    setIsDragged(true);
   }
 
-
   function endResize(event) {
-    console.log('endResize ------->');
-    if(isSplitterSelected){
-      setIsSplitterSelected(false)
-    }
+    currentToggleLine.current = null;
+    setIsDragged(false);
   }
 
   function handleResize(event) {
-    if (isSplitterSelected) {
-      yEnd = event.clientY;
-
-      console.log('blockHeight + yStart - yEnd', blockHeight, yStart - yEnd);
-
-      requestAnimationFrame(() => {
-        setBlockHeight(blockHeight + yStart - yEnd)
-      });
+    if (!currentToggleLine.current || !isDragged) {
+      return;
     }
-  }
+    const { dY } = currentToggleLine.current;
+    const { pageY, movementY } = event;
+    console.dir(dY, pageY, movementY);
 
-  function getContentHeight(){
-    const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    return height/2
+    const firstBlock = pageY - dY;
+    const secondBlock = wrapper.current.offsetHeight - firstBlock - 25;
+
+    setHeightStates([firstBlock, secondBlock]);
   }
 }
 
