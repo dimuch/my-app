@@ -34,10 +34,10 @@ function App() {
              style={{'height': blockHeight}}
         >
           <div className="admc-detailed-block-switcher">
-            <button className="admc-dividers-wrapper">
+            <div className="admc-dividers-wrapper">
               <div className="divider"></div>
               <div className="divider"></div>
-            </button>
+            </div>
           </div>
           <div className="admc-detailed-data-block-content">
             <EmptyDataPlaceholder/>
