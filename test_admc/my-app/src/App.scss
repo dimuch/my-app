@@ -1,6 +1,7 @@
 @import "./style/_main";
 .admc-detailed-data-block-content-wrapper{
   position: relative;
+  min-height: 100px;
 }
 
 .admc-detailed-block-switcher{
@@ -45,4 +46,6 @@
   right: 0;
   bottom: 0;
   top: auto;
+  background-color: lightseagreen;
+  z-index: 1;
 }

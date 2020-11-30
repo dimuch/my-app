@@ -24,12 +24,12 @@ function App() {
   return (
     <div className='top-wrap' style={{position: 'relative', height: '100vh'}}
          onMouseMove={handleResize}
+         onMouseUp={endResize}
     >
       <div style={{height: '200px', border: '1px solid red'}}></div>
       <div className="App"
       >
         <div className={"admc-detailed-data-block-content-wrapper"}
-             onMouseUp={endResize}
              onMouseDown={startResize}
              style={{'height': blockHeight}}
         >
