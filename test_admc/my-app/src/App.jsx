@@ -1,78 +1,77 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useLayoutEffect, useEffect, useState, useRef } from "react";
 
-import EmptyDataPlaceholder from './components/empty-data-placeholder/EmptyDataPlaceholder';
-import './App.scss';
-
-let yStart = 0, yEnd = 0, diff = 0, isSplitterSelected, h;
-
-function getContentHeight() {
-  const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-  return height / 2
-}
+import EmptyDataPlaceholder from "./components/empty-data-placeholder/EmptyDataPlaceholder";
+import "./App.scss";
 
 function App() {
-  const initHeight = getContentHeight();
-  const [blockHeight, setBlockHeight] = useState(initHeight);
+  const wrapper = useRef();
+  const currentToggleLine = useRef();
+  const [isDragged, setIsDragged] = useState(false);
+  const [blockHeight, setBlockHeight] = useState(0);
+  const [heightStates, setHeightStates] = useState([0, 0]);
 
-  isSplitterSelected = useRef(false);
-  diff = useRef(0);
-  h = useRef(initHeight)
-
-  console.log(blockHeight, '\n', 'requestRef', isSplitterSelected, '\n', 'h ===>', h);
-
+  useLayoutEffect(() => {
+    const { height } = wrapper.current.getBoundingClientRect();
+    setBlockHeight(height);
+    const elementHeight =
+      (height - (25 * heightStates.length - 1)) / heightStates.length;
+    setHeightStates((prev) => prev.map(() => elementHeight));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className='top-wrap' style={{position: 'relative', height: '100vh'}}
-         onMouseMove={handleResize}
-    >
-      <div style={{height: '200px', border: '1px solid red'}}></div>
-      <div className="App"
+    <div className="App container for dynamic block" ref={wrapper}>
+      <div
+        onMouseUp={endResize}
+        onMouseMove={handleResize}
+        className={"admc-detailed-data-block-content-wrapper"}
+        style={{ height: blockHeight }}
       >
-        <div className={"admc-detailed-data-block-content-wrapper"}
-             onMouseUp={endResize}
-             onMouseDown={startResize}
-             style={{'height': blockHeight}}
-        >
-          <div className="admc-detailed-block-switcher">
-            <button className="admc-dividers-wrapper">
-              <div className="divider"></div>
-              <div className="divider"></div>
-            </button>
+        <div style={{ height: heightStates[0] }}>
+          <EmptyDataPlaceholder />
+        </div>
+        <div className="admc-detailed-block-switcher" onMouseDown={startResize}>
+          <div className="admc-dividers-wrapper">
+            <div className="divider"></div>
+            <div className="divider"></div>
           </div>
-          <div className="admc-detailed-data-block-content">
-            <EmptyDataPlaceholder/>
-          </div>
+        </div>
+        <div style={{ height: heightStates[1] }}>
+          <EmptyDataPlaceholder />
         </div>
       </div>
     </div>
   );
 
   function startResize(event) {
-    console.log('startResize ====>');
-    yStart = event.clientY;
-    isSplitterSelected.current = true
+    if (isDragged) {
+      return;
+    }
+
+    const { target, pageY } = event;
+    const dY = pageY - target.offsetTop;
+
+    currentToggleLine.current = { target, dY };
+    setIsDragged(true);
   }
 
-
   function endResize(event) {
-    console.log('endResize ------->');
-    if (isSplitterSelected) {
-      isSplitterSelected.current = false
-    }
+    currentToggleLine.current = null;
+    setIsDragged(false);
   }
 
   function handleResize(event) {
-    yEnd = event.clientY;
-    diff.current = yStart - yEnd;
-    yStart = yEnd;
-
-    if (isSplitterSelected.current && diff.current !== 0) {
-      console.log('diff=====>', diff);
-      h.current = h.current + diff.current;
-      requestAnimationFrame(() => {
-        setBlockHeight(h.current)
-      })
+    if (!currentToggleLine.current || !isDragged) {
+      return;
     }
+    const { dY } = currentToggleLine.current;
+    const { pageY, movementY } = event;
+    console.dir(dY, pageY, movementY);
+
+    const firstBlock = pageY - dY;
+    const secondBlock = wrapper.current.offsetHeight - firstBlock - 25;
+
+    setHeightStates([firstBlock, secondBlock]);
   }
 }
 
